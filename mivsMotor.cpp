@@ -62,7 +62,7 @@ void Motor::rotate(float _degrees)
   direction  = (_degrees > 0) ? CLOCKWISE : CCW;    
 
   // [FIX] Is is safe to do this without typecasting?
-  unsigned int steps_left = (unsigned int)round((abs(_degrees) / 360.0) * steps);  
+  unsigned int steps_left = (unsigned int)round((abs(_degrees) / 360.0)*steps);  
 
 
   while (steps_left > 0)
