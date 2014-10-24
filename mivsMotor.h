@@ -17,6 +17,7 @@ class Motor {
   public:
     Motor(int _steps, int _pin_1, int _pin_2, int _pin_3, int _pin_4);
     void rotate(float _degrees);
+    void step(int _steps);
     void setSpeed(float _rpm);
 
   private:
@@ -26,7 +27,7 @@ class Motor {
     int   steps;                        // steps per revolution
     int   step_num;                     // current step
     int   step_delay;                   // based on motor speed [rpm]
-    bool  direction;                    // motor direction
+    bool  direction;                    // motor direction (NOT USED for NEMA-17)
 
     // timing
     unsigned long last_step_time;       // time stamp [micros] of last step

@@ -23,8 +23,8 @@
 #define IN3  12
 #define IN4  13
 
-// steps per revolution (28BYJ-48)
-#define STEPS 4096
+// steps per revolution 
+#define STEPS 200
 
 // construct motor object
 Motor motor(STEPS, IN1, IN2, IN3, IN4);
