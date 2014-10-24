@@ -7,12 +7,14 @@ const int AIA = 9;  // (pwm) pin 9 connected to pin A-IA
 const int AIB = 5;  // (pwm) pin 5 connected to pin A-IB 
 const int BIA = 10; // (pwm) pin 10 connected to pin B-IA  
 const int BIB = 6;  // (pwm) pin 6 connected to pin B-IB
+
 int current_step = 1;
 int step_delay = 10;
  
 byte speed = 255;  // change this (0-255) to control the speed of the motors 
  
-void setup() {
+void setup() 
+{
   Serial.begin(9600);
   pinMode(AIA, OUTPUT); // set pins to output
   pinMode(AIB, OUTPUT);
