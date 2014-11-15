@@ -12,16 +12,29 @@
  */
 
 int analogPin = 0;    
+int ledPin = 13;
 int val = 0;                        // variable to store the value read
 
 void setup()
 {
   Serial.begin(9600);               //  setup serial
+  pinMode(ledPin, OUTPUT);
 }
 
 
 void loop()
 {
   val = analogRead(analogPin);      // read the input pin
-  Serial.println(val);              // print value to monitor
+
+  // print data
+  Serial.print(millis(), DEC);
+  Serial.print(",");
+  Serial.print(val, DEC);         // print value to monitor
+  Serial.print(",");
+  Serial.println();
+
+  digitalWrite(ledPin, (val > 500) ? HIGH : LOW);
+
+
+  delay(500);
 }

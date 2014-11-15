@@ -19,4 +19,5 @@ void loop()
 {
   val = analogRead(pin);      // read the value from the sensor
   Serial.println(val);        // print data to monitor
+  delay(500);
 }
