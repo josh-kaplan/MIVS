@@ -104,7 +104,7 @@ void loop()
   knob_val = analogRead(KNOB_PIN);
   flow_rate = (float) knob_val * conversion_factor;
   
-
+  
   if ((air_sensor_val = analogRead(AIR_PIN)) > 900 )
   {
     //motor.setSpeed(0);
