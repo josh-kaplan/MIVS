@@ -12,38 +12,54 @@
 /*----------( Libraries )----------*/
 
 #include <LiquidCrystal.h>        // Arduino LCD library for LCD screen
+//#include "LCDKeypad.h"
+#include "DFR_Key.h"              // library for reading keypad values
+#include "Motor.h"                // motor library for stepper motor
 
 
-/*----------( Pin Definitions )----------*/
+/*----------( Motor Setup )----------*/
+
 #define MOTOR_PIN 13              // motor PWM pin
-#define AIR_PIN 2                 // air-in-line sensor analog pin
-#define KNOB_PIN 3                // define control knob analog pin
 
-/*----------( Controls )----------*/
+
+/*----------( Air Sensor )----------*/
+
+#define AIR_PIN 2                 // air-in-line sensor analog pin
 #define THRESHOLD 800             // air sensor threshold value
 
-/*----------( LCD Setup )----------*/
-#define LCD_1 8                   
+/*----------( UI Setup)----------*/
+
+#define LCD_1 8                   // define LCD pins
 #define LCD_2 9
 #define LCD_3 4
 #define LCD_4 5
 #define LCD_5 6
 #define LCD_6 7
 
+#define KNOB_PIN 3                // define control knob analog pin
+
+
+/*----------( Object Declarations )----------*/
+
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);       // Sainsmart LCD Keypad Shield
+DFR_Key keypad;                            // Sainsmart LCD Keypad
+
  
  
 /*----------( Global Variables )----------*/
 
 // sensor readings
+int keypad_val = 0;                     // keypad value
 int knob_val = 0;                       // potentiometer knob
 int air_sensor_val = 0;                 // air sensor 
 
 // flow rate variables
-float c_1 = 1000.0 / 1023.0;            // knob_val to flow rate conversion
+float knob2flow  = 1000.0 / 1023.0;     // knob_val to motor speed conversion
+float flow2delay = 1000.0;              // conversion factor - flow rate to delay time
 int flow_rate = 0;                      // flow rate in mL/h
-unsigned int motor_time_on  = 0;        // motor pulse time
-unsigned int motor_time_off = 0;        // delay between motor pulses
+int motor_time_on  = 0;                 // motor pulse time
+int motor_time_off = 0;                 // delay between motor pulses
+
 
  
 /**
@@ -61,18 +77,18 @@ void setup()
   lcd.begin(16, 2);                // defines an LCD with 16 cols and 2 rows
   lcd.clear();                     // clears the screen
   lcd.setCursor(0, 0);             // sets the cursor to the screen origin
-
+  keypad.setRate(10);              // sets the keypad rate (in millis I think)
+  
   /*-----( MIVS Startup )-----*/
   lcd.print("Initializing...");      
-
+  
   pinMode(MOTOR_PIN, OUTPUT);      // set motor pin as output
+  motor_time_on = 40;              // set motor to pulse for 40 ms
+  motor_time_off = 250;            // delay between motor pulses
 
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Microgravity");
-  lcd.setCursor(0, 1);
-  lcd.print("Medical"); 
-  delay(2000);
+  // finish setup
+  lcd.print("Complete."); 
+  delay(100);
   lcd.clear();
 }
 
@@ -88,50 +104,38 @@ void loop()
 {
   // read speed setting, print to screen, set flow rate
   knob_val = analogRead(KNOB_PIN);
+  flow_rate = (int)round( (float)((knob_val / 1023.0) * 1000.0) );
+  
 
-  // calculate and prinf flow rate
-  flow_rate = (int)round( c_1 * (float)knob_val );
-  Serial.print("Flow Rate:  ");
-  Serial.println(flow_rate);
+  if ((air_sensor_val = analogRead(AIR_PIN)) > THRESHOLD)
+  {
+    //motor.setSpeed(0);
+    //lcd.clear();
+    //lcd.setCursor(0,0);               
+    //lcd.print("Air Bubble Detected");
+  }
+
+  // print flow rate data
   lcd.setCursor(0,0);               
   lcd.print("Flow Rate:       ");
   lcd.setCursor(11,0);
   lcd.print(flow_rate);
-
-  // read air sensor value, report failure if bubble detected
-  if ((air_sensor_val = analogRead(AIR_PIN)) > THRESHOLD)
-  {
-    //lcd.clear();
-    //lcd.setCursor(0,0);               
-    //lcd.print("Air Bubble Detected");
-
-    // stop the pump
-    //while (1) {};       
-  }
-
+  
   // print air sensor readings
   lcd.setCursor(0,1);               
   lcd.print("Air:         ");
   lcd.setCursor(5,1); 
   lcd.print(air_sensor_val);
 
-
-
   // prepare for motor pulse
   motor_time_on = 40;
-  motor_time_off = 1000 - flow_rate;
-  Serial.print("Time Delay: ");
+  motor_time_off = (int)round( (float)(flow2delay / flow_rate) );
   Serial.println(motor_time_off);
-  Serial.println("");
-
   
   // execute a motor pulse
-  digitalWrite(MOTOR_PIN, (flow_rate) ? HIGH : LOW);
+  digitalWrite(MOTOR_PIN, HIGH);
   delay(motor_time_on);
-  if (flow_rate != 1000)
-  {
-    digitalWrite(MOTOR_PIN, LOW);
-    delay(motor_time_off);
-  }
+  digitalWrite(MOTOR_PIN, LOW);
+  delay(motor_time_off);
 }
 

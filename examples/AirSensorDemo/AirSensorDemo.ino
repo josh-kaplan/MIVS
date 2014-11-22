@@ -7,13 +7,13 @@
  * October 2014
  *
  * The sensor is based on the APTV resistive tracer sensor.
- * A circuit diagram can be found aon page 4 of
+ * A circuit diagram can be found on page 4 of
  * http://joshkaplan.org/files/Cross-Type%20APTV.pdf
  */
 
 #define PIN 0  
 #define LED 13
-#define THRESHOLD 300
+#define THRESHOLD 700
 int val = 0;
 
 void setup() 
@@ -29,11 +29,11 @@ void loop()
 
     // if in water, turn LED on
     // otherwise, turn LED off
-    if (val < THRESHOLD)
+    if (val > THRESHOLD)                // if water
     {
         digitalWrite(LED, HIGH);
     }
-    else
+    else                                // if air
     {
         digitalWrite(LED, LOW);
     }

@@ -27,14 +27,8 @@ void loop()
   val = analogRead(analogPin);      // read the input pin
 
   // print data
-  Serial.print(millis(), DEC);
-  Serial.print(",");
-  Serial.print(val, DEC);         // print value to monitor
-  Serial.print(",");
-  Serial.println();
-
+  Serial.println(val, DEC);         // print value to monitor
   digitalWrite(ledPin, (val > 500) ? HIGH : LOW);
 
-
-  delay(500);
+  delay(50);
 }
